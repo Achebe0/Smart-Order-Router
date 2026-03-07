@@ -1,33 +1,27 @@
 spring:
   application:
     name: FluxGate
-  # --- Database Configuration ---
+
   datasource:
-    # These placeholders MUST be provided by the environment
-    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
+    url: ${DATABASE_URL}
     driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
-      ddl-auto: update # Creates/updates tables on startup
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-  # --- RabbitMQ Configuration (Optional) ---
+
   rabbitmq:
-    # If these variables are not set, RabbitMQ will be disabled.
     host: ${RABBITMQ_HOST:}
     port: ${RABBITMQ_PORT:5672}
     username: ${RABBITMQ_USER:}
     password: ${RABBITMQ_PASSWORD:}
 
-# --- Server Port ---
 server:
-  # The PORT variable is provided automatically by Render/Railway
   port: ${PORT}
 
-# --- API Keys ---
 nvidia:
   api-key: ${NVIDIA_API_KEY}
