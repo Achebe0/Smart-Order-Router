@@ -25,9 +25,10 @@ public class PromptController {
     private final LlmService llmService;
     private final PromptLogRepository promptLogRepository;
     private final LogProducer logProducer; // Re-enabled for async logging
-    
-    private final EncodingRegistry registry = Encodings.newDefaultEncodingRegistry();
+
+    private final EncodingRegistry registry = Encodings.newDefaultEncodingRegistry(); // tokenizers from OpenAI
     private final Encoding encoding = registry.getEncoding(EncodingType.CL100K_BASE);
+
 
     private static final Set<String> COMPLEX_KEYWORDS = Set.of(
         "essay", "story", "analyze", "explain", "reason", "compare", "contrast", 
@@ -51,11 +52,12 @@ public class PromptController {
 
         LlmService.ModelType selectedType;
         String routingReason;
+        // this should be a list for better accuracy and potential latency
         int length = prompt.length();
         String lowerPrompt = prompt.toLowerCase();
 
         boolean isComplex = COMPLEX_KEYWORDS.stream().anyMatch(lowerPrompt::contains);
-
+// I want to make this logic more complex
         if (length > 200 || isComplex) {
             selectedType = LlmService.ModelType.FAST_AND_REASONING;
             routingReason = isComplex 
@@ -78,14 +80,16 @@ public class PromptController {
         
         // ASYNC LOGGING via RabbitMQ
         PromptLogDTO logDTO = new PromptLogDTO(
-            originalTokens,
-            optimizedTokens,
-            prompt,
-            optimizedPrompt,
-            modelName
+                originalTokens,
+                optimizedTokens,
+                prompt,
+                optimizedPrompt,
+                modelName
         );
         logProducer.sendLog(logDTO);
+        // --- Latency Reduction: Asynchronous Logging via RabbitMQ ---
 
+       // Offloads prompt log DB writes to a RabbitMQ worker to reduce blocking and lower p95 latency for optimization
         OptimizationResponse response = new OptimizationResponse(
             prompt,
             optimizedPrompt,
@@ -107,7 +111,7 @@ public class PromptController {
     private String getMatchedKeyword(String prompt) {
         return COMPLEX_KEYWORDS.stream()
             .filter(prompt::contains)
-            .findFirst()
-            .orElse("complex");
+            .findFirst() // finds the keyword in the list
+            .orElse("complex"); // assume its complex if not found
     }
 }

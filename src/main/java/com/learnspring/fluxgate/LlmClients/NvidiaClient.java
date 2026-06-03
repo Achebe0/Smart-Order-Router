@@ -18,7 +18,7 @@ public class NvidiaClient implements LlmProvider {
     private final String modelName = "meta/llama-3.1-8b-instruct";
 
     public NvidiaClient(
-            @Value("${nvidia.api-key:}") String apiKey, // default empty string
+            @Value("${NVIDIA_API_KEY:}") String apiKey, // default empty string
             WebClient.Builder builder
     ) {
         this.enabled = !apiKey.isEmpty();
@@ -50,6 +50,8 @@ public class NvidiaClient implements LlmProvider {
                 false
         );
 
+        long startTime = System.nanoTime(); // Start timing
+
         try {
             ChatResponse response = webClient
                     .post()
@@ -59,10 +61,17 @@ public class NvidiaClient implements LlmProvider {
                     .bodyToMono(ChatResponse.class)
                     .block();
 
+            long endTime = System.nanoTime(); // End timing
+            double durationInMillis = (endTime - startTime) / 1_000_000.0;
+            System.out.println("Nvidia API call latency: " + durationInMillis + " ms"); // Log latency
+
             if(response != null && !response.choices().isEmpty()) {
                 return response.choices().get(0).message().content();
             }
         } catch(Exception e){
+            long endTime = System.nanoTime(); // End timing even on error
+            double durationInMillis = (endTime - startTime) / 1_000_000.0;
+            System.err.println("Error calling Nvidia API after " + durationInMillis + " ms: "+ e.getMessage());
             return "Error calling Nvidia API: "+ e.getMessage();
         }
         return "No response from Nvidia API";

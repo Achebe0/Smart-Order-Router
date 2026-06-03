@@ -15,6 +15,7 @@ public class LogProducer {
         this.rabbitTemplate = rabbitTemplate;
     }
 
+    // sends the RabbitMQ logs to the queue
     public void sendLog(PromptLogDTO logDTO) {
         try {
             rabbitTemplate.convertAndSend(
@@ -22,7 +23,7 @@ public class LogProducer {
                 RabbitConfig.ROUTING_KEY,
                 logDTO
             );
-            System.out.println(" [x] Sent log to RabbitMQ: " + logDTO.selectedModel());
+            System.out.println(" Sent log to RabbitMQ: " + logDTO.selectedModel());
         } catch (AmqpException e) {
             // Log the error but do not crash the application
             System.err.println("Failed to send log to RabbitMQ. Logging is disabled or RabbitMQ is down. Error: " + e.getMessage());

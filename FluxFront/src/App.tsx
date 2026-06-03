@@ -41,7 +41,8 @@ function App() {
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`Failed to optimize prompt: ${response.status} ${response.statusText} - ${errorText}`);
+        throw new Error(
+            `Failed to optimize prompt: ${response.status} ${response.statusText} - ${errorText}`);
       }
 
       const data: OptimizationResponse = await response.json();

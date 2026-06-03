@@ -18,7 +18,7 @@ public class LogWorker {
 
     @RabbitListener(queues = RabbitConfig.QUEUE_NAME)
     public void processLog(PromptLogDTO dto) {
-        System.out.println(" [>] Received log from RabbitMQ. Saving to DB...");
+        System.out.println("Received log from RabbitMQ. Saving to DB...");
         
         PromptLog log = new PromptLog(
             dto.originalTokens(),
@@ -29,6 +29,6 @@ public class LogWorker {
         );
         
         repository.save(log);
-        System.out.println(" [√] Log saved successfully.");
+        System.out.println(" Log saved successfully.");
     }
 }

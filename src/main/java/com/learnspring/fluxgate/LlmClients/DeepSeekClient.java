@@ -17,7 +17,7 @@ public class DeepSeekClient implements LlmProvider {
     private final String modelName = "google/gemma-2-9b-it";
 
     public DeepSeekClient(
-            @Value("${nvidia.api-key:}") String apiKey, // default empty string
+            @Value("${NVIDIA_API_KEY:}") String apiKey, // default empty string
             WebClient.Builder builder
     ) {
         this.enabled = !apiKey.isEmpty();

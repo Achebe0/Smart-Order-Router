@@ -16,7 +16,7 @@ public class ChimeraClient implements LlmProvider {
     private final boolean enabled;
 
     public ChimeraClient(
-            @Value("${nvidia.api-key:}") String apiKey, // default empty string
+            @Value("${NVIDIA_API_KEY:}") String apiKey, // default empty string
             WebClient.Builder builder
     ) {
         this.enabled = !apiKey.isEmpty();
@@ -61,6 +61,7 @@ public class ChimeraClient implements LlmProvider {
                     .bodyToMono(ChatResponse.class)
                     .block();
 
+            // if prompt is not empty then return response
             if (response != null && !response.choices().isEmpty()) {
                 return response.choices().get(0).message().content();
             }
